@@ -2,7 +2,7 @@ from datetime import date
 from pydantic import BaseModel, EmailStr, field_validator, Field
 from models import User
 from enum import Enum
-from typing import Optional, Dict,List
+from typing import Optional, Dict, List
 
 
 class UserLoginIn(BaseModel):
@@ -48,7 +48,7 @@ class LiteratureIn(BaseModel):
 
 
 class FilenameIn(BaseModel):
-    filename:List[str]
+    filename: List[str]
 
 
 # 定义排序方式的枚举
@@ -100,6 +100,30 @@ class SearchIn(BaseModel):
             for pair in value.split(','):
                 if ':' not in pair:
                     raise ValueError(f"过滤条件格式错误，应为 'field:value'，实际得到: {pair}")
+        return value
+
+
+class TranslationIn(BaseModel):
+    content: str
+    source_language: str
+    translated_language: str
+    style: str
+
+
+    @field_validator("source_language", "translated_language")
+    @classmethod
+    def validate_language(cls, value: str) -> str:
+        allowed_languages = {"Chinese", "English"}
+        if value not in allowed_languages:
+            raise ValueError(f"Language must be one of {allowed_languages}")
+        return value
+
+    @field_validator("style")
+    @classmethod
+    def validate_style(cls, value: str) -> str:
+        allowed_styles = {"general", "academic"}
+        if value not in allowed_styles:
+            raise ValueError(f"Style must be one of {allowed_styles}")
         return value
 
 
