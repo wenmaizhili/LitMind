@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文献可视化分析系统</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>文献可视化分析系统</h1>
+            <p>输入核心文献，自动生成引用关系图、领域热点热力图与方法分布桑基图</p>
+        </header>
+
+        <div class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <svg class="upload-icon" viewBox="0 0 24 24">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                    </svg>
+                    <h3>上传文献文件</h3>
+                    <p>支持 .txt, .csv, .json 格式</p>
+                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">选择文件</button>
+                    <input type="file" id="fileInput" accept=".txt,.csv,.json" style="display: none;">
+                </div>
+            </div>
+            
+            <div class="sample-data">
+                <button class="sample-btn" onclick="loadSampleData()">使用示例数据</button>
+            </div>
+        </div>
+
+        <div class="controls" id="controls" style="display: none;">
+            <div class="control-group">
+                <label for="minCitations">最小引用数:</label>
+                <input type="range" id="minCitations" min="0" max="100" value="5">
+                <span id="minCitationsValue">5</span>
+            </div>
+            <div class="control-group">
+                <label for="timeRange">时间范围:</label>
+                <select id="timeRange">
+                    <option value="all">全部</option>
+                    <option value="recent5">近5年</option>
+                    <option value="recent10">近10年</option>
+                </select>
+            </div>
+            <button class="refresh-btn" onclick="updateVisualizations()">更新可视化</button>
+        </div>
+
+        <div class="visualization-container" id="visualizations" style="display: none;">
+            <div class="viz-tabs">
+                <button class="tab-btn active" onclick="showTab('citation')">引用关系图</button>
+                <button class="tab-btn" onclick="showTab('heatmap')">领域热点热力图</button>
+                <button class="tab-btn" onclick="showTab('sankey')">方法分布桑基图</button>
+            </div>
+
+            <div class="tab-content">
+                <div id="citation-tab" class="tab-panel active">
+                    <div class="chart-header">
+                        <h3>引用-被引用关系图</h3>
+                        <p>展示文献间的引用关系网络</p>
+                    </div>
+                    <div id="citationChart" class="chart"></div>
+                </div>
+
+                <div id="heatmap-tab" class="tab-panel">
+                    <div class="chart-header">
+                        <h3>领域热点热力图</h3>
+                        <p>显示不同研究领域的热度分布</p>
+                    </div>
+                    <div id="heatmapChart" class="chart"></div>
+                </div>
+
+                <div id="sankey-tab" class="tab-panel">
+                    <div class="chart-header">
+                        <h3>方法分布桑基图</h3>
+                        <p>展示研究方法在不同领域的分布流向</p>
+                    </div>
+                    <div id="sankeyChart" class="chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-panel" id="statsPanel" style="display: none;">
+            <h3>数据统计</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-value" id="totalPapers">0</span>
+                    <span class="stat-label">总文献数</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="totalCitations">0</span>
+                    <span class="stat-label">总引用数</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="avgCitations">0</span>
+                    <span class="stat-label">平均引用数</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="topFields">0</span>
+                    <span class="stat-label">主要领域数</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
